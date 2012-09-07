@@ -1,3 +1,4 @@
+  source 'https://rubygems.org'
 gem 'riak-client'
 
 gem 'yajl-ruby' # fast json parsing
