@@ -13,7 +13,15 @@ class Donkey
 end
 
 module Thin
-  class Connection < EventMachine::Connection
+  class Request
+    alias :thin_request_parse :parse
+    def parse(*args)
+      p 'before thin_request_parse'
+      p args
+      returnval = thin_request_parse(*args)
+      p 'after thin_request_parse'
+      return returnval
+    end
 
   end
 end
