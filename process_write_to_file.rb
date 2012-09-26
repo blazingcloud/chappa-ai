@@ -5,6 +5,7 @@ require 'yajl'
 require 'uri'
 require 'debugger'
 require "base64"
+require_relative 'spike/filestore'
 
 def delete_actual_host_from_request_path(path) 
     
@@ -49,9 +50,9 @@ def proccess_request_record(key,hash, &block)
 end
 
 
-$client = Riak::Client.new(:http_backend => :Excon)
+$client = FileStore::Client.new
+
 results = $client.get_index('requests','request-complete_int','1')
-p results
 results.each do | key |
   p key
   p = Yajl::Parser.new

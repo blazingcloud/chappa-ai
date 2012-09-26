@@ -6,8 +6,9 @@ require 'uri'
 require 'debugger'
 require "base64"
 require 'yajl/json_gem' # MULTIJSON is a bad kitty # yajl can replace it with this line 
+require_relative '../spike/filestore'
 
-$client = Riak::Client.new(:http_backend => :Excon)
+$client = FileStore::Client.new
 
 class Time
   def to_ms
@@ -223,8 +224,14 @@ class Site < Sinatra::Base
     # oh spagetti
     # 
     thin_request.start_proxy_record # for keep-alive
-
-    ret = "Nasrudin was riding on his donkey..."
+    ret = %%<?xml version="1.0" encoding="UTF-8"?>
+<methodResponse>
+    <params>
+        <param>
+            <value>Image successfully uploaded to Nasrudin's Donkey</value>
+        </param>
+    </params>
+</methodResponse>%
    rescue Exception
      p $!
      p $!.backtrace
@@ -234,6 +241,8 @@ class Site < Sinatra::Base
   end
 
   post "/*" do
+    puts "--Sintra- Complete Request arrived #{params}"
+    content_type "application/xml", :charset => 'utf-8'
     store_request
   end
   

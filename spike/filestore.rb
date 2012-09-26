@@ -37,8 +37,26 @@ module FileStore
     def get_or_new(key)
       Object.new(key,self)
     end
+
+    def [](keyified) # get
+      obj = nil
+      self.store.transaction(true) do
+        obj = self.store[keyified]
+      end
+      if obj == nil
+        raise "#{keyified} Object has no value "
+      end
+      obj
+    end
+
     def keyify(*args)
       ([self.name] | args).join(':')
+    end
+
+    def delete(key)
+      self.store.transaction do
+        self.store.delete(key)
+      end
     end
   end
   class Stamp
@@ -63,23 +81,6 @@ module FileStore
     end
   end
 
-  class Result
-    attr_accessor :bucket
-    def initialize(bucket)
-      self.bucket = bucket
-    end
-
-    def [](keyified)
-      obj = nil
-      self.bucket.store.transaction(true) do
-        obj = self.bucket.store[keyified]
-      end
-      if obj == nil
-        raise "#{keyified} Object has no value "
-      end
-      obj
-    end
-  end
 
   class Client
     attr_reader :store
@@ -90,9 +91,8 @@ module FileStore
     def bucket(name)
       Bucket.new(name,@store)
     end
-    def [](name)
-      Result.new(self.bucket(name))
-    end
+    alias  :[] :bucket
+
     def stamp
       Stamp.new
     end
