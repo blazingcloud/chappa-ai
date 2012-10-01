@@ -147,7 +147,7 @@ results.each do | key |
     key_success = false
   end
   if key_success
-    $client['requests'].delete('key')
+    $client['requests'].delete(key)
   end
 end
 
